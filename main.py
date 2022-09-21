@@ -1,5 +1,6 @@
 import fastapi
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import Response
 
 from settings import settings
 
@@ -23,4 +24,4 @@ app.add_middleware(
 
 @app.get("/")
 def healthcheck():
-    return "OK"
+    return Response("OK")
