@@ -9,7 +9,7 @@ updates:
     # Check for updates to GitHub Actions every weekday
     schedule:
       interval: "daily"
-      
+
   # Enable version updates for Python/Pip - Production
   - package-ecosystem: "pip"
     # Look for a `requirements.txt` in the `root` directory
