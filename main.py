@@ -1,6 +1,6 @@
 import fastapi
 from fastapi.middleware.cors import CORSMiddleware
-from infrastructure import db
+
 from settings import settings
 
 app = fastapi.FastAPI(
@@ -9,7 +9,7 @@ app = fastapi.FastAPI(
     version="0.1.0",
     license_info={
         "name": "MIT",
-    }
+    },
 )
 
 app.add_middleware(
@@ -18,7 +18,8 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-    )
+)
+
 
 @app.get("/")
 def healthcheck():
