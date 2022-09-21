@@ -9,35 +9,58 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint:
+  linter:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+
+      - name: Checkout Code Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
         with:
           python-version: "3.9"
           cache: pip
+          cache-dependency-path: |
+            requirements.txt
       - name: Run pre-commit
-        uses: pre-commit/action@v3.0.0
-
-  tests:
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-latest
-          - windows-latest
-          - macOS-latest
-
-    name: "Run tests"
-    runs-on: ${{ matrix.os }}
+        uses: pre-commit/action@v2.0.3
+  pytest:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:12
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_PASSWORD: postgres
+    env:
+      DATABASE_URL: "postgres://postgres:postgres@localhost:5432/postgres"
+      
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - name: Checkout Code Repository
+        uses: actions/checkout@v3
+        
+      - name: Set up Python
+        uses: actions/setup-python@v3
         with:
           python-version: "3.9"
           cache: pip
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-      - name: Run tests
-        run: pytest tests
+          cache-dependency-path: |
+            requirements/base.txt
+            requirements/local.txt
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements/local.txt
+      - name: Test with pytest
+        run:  pytest
+      - name: Setup Fly
+        uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: Fly Deploy
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: flyctl deploy --remote-only
+
+    
+    
