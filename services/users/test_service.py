@@ -1,18 +1,22 @@
 import unittest
 
-from infrastructure.db import Base, SessionLocal, engine
+import pytest
+
+from infrastructure.db import Base
 from models import user
 from services.users import exceptions, schema, service
 
 
 class TestUserService(unittest.TestCase):
-    def setUp(self) -> None:
+    @pytest.fixture(autouse=True)
+    def db_setup(self, db_session, db_engine):
+        self.db = db_session
+        self.engine = db_engine
 
-        # Create tables
-        Base.metadata.create_all(engine)
+    def setUp(self) -> None:
+        Base.metadata.create_all(self.engine)
         # Connect to database and initialize service
-        self.db = SessionLocal()
-        self.service = service.Service(SessionLocal())
+        self.service = service.Service(self.db)
         # Insert test data
         # Password:"hello"
         self.user1 = user.User(
@@ -95,5 +99,4 @@ class TestUserService(unittest.TestCase):
         )
 
     def tearDown(self) -> None:
-        Base.metadata.drop_all(engine)
-        self.service.db.close()
+        Base.metadata.drop_all(self.engine)

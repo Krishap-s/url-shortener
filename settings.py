@@ -1,5 +1,3 @@
-import sys
-
 from pydantic import BaseSettings
 
 
@@ -23,15 +21,5 @@ class TestSettings(BaseSettings):
     allow_origins: list = ["*"]
     migrate: bool = True
 
-    class Config:
-        env_file = "test.env"
-        env = {
-            "database_url": {"env": "DATABASE_URL"},
-        }
 
-
-# Give different settings when run from pytest
-if "pytest" in sys.argv[0]:
-    settings = TestSettings()
-else:
-    settings = Settings()
+settings = Settings()
