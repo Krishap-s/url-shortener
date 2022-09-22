@@ -34,8 +34,7 @@ def db_session_factory(db_engine):
 @pytest.fixture(scope="function")
 def db_session(request, db_session_factory):
     """yields a SQLAlchemy connection which is rollbacked after the test"""
-
     session_ = db_session_factory()
     yield session_
-
+    session_.rollback()
     session_.close()

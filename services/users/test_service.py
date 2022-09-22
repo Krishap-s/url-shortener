@@ -9,9 +9,9 @@ from services.users import exceptions, schema, service
 
 class TestUserService(unittest.TestCase):
     @pytest.fixture(autouse=True)
-    def db_setup(self, db_session, db_engine):
-        self.db = db_session
-        self.engine = db_engine
+    def db_setup(self, db_session_factory):
+        self.db = db_session_factory()
+        self.engine = self.db.get_bind()
 
     def setUp(self) -> None:
         Base.metadata.create_all(self.engine)
@@ -99,4 +99,6 @@ class TestUserService(unittest.TestCase):
         )
 
     def tearDown(self) -> None:
+        self.db.rollback()
+        self.db.close()
         Base.metadata.drop_all(self.engine)
