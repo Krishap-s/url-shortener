@@ -52,7 +52,7 @@ class TestUserService(unittest.TestCase):
 
     def test_get_user_by_id(self):
         """Test if a user can be retreived by id"""
-        db_user = self.service.get_user_by_id(self.user1.id)
+        db_user = self.service.get_user_by_id(1)
         self.assertIsNotNone(db_user)
         self.assertEqual(db_user.username, self.user1.username)
         self.assertRaises(

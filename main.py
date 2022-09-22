@@ -1,7 +1,9 @@
 import fastapi
+from fastapi import security
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 
+from api.user import UserRouter
 from settings import settings
 
 app = fastapi.FastAPI(
@@ -13,6 +15,8 @@ app = fastapi.FastAPI(
     },
 )
 
+oauth2_scheme = security.OAuth2PasswordBearer(tokenUrl="token")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.allow_origins,
@@ -23,5 +27,8 @@ app.add_middleware(
 
 
 @app.get("/")
-def healthcheck():
+async def healthcheck():
     return Response("OK")
+
+
+app.include_router(UserRouter)

@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     database_url: str = "sqlite:///:memory:"
     allow_origins: list = ["*"]
     migrate: bool = False
+    secret_key: str = "secret"
 
     class Config:
         env_file = ".env"
@@ -20,6 +21,7 @@ class TestSettings(BaseSettings):
     database_url: str = "sqlite:///:memory:"
     allow_origins: list = ["*"]
     migrate: bool = True
+    secret_key: str = "secret"
 
 
 settings = Settings()

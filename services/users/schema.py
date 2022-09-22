@@ -11,3 +11,10 @@ class CreateUserSchema(pydantic.BaseModel):
 class AuthenticateSchema(pydantic.BaseModel):
     username: str
     password: str
+
+
+class User(pydantic.BaseModel):
+    id: int
+    username: str
+    email: pydantic.EmailStr
+    is_admin: bool
