@@ -1,9 +1,11 @@
+import imp
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
-from models import user
+from infrastructure.db import Base
+from models import link, user
 from settings import settings
 
 # this is the Alembic Config object, which provides
@@ -23,7 +25,7 @@ config.set_main_option("sqlalchemy.url", formatted_database_url)
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = [user.User.metadata]
+target_metadata = [Base.metadata]
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
