@@ -13,11 +13,13 @@ class Service:
         """Build Link Service"""
         self.db = session
 
-    def create_link(self, inp: schema.CreateLinkSchema) -> schema.Link:
+    def create_link(
+        self, inp: schema.CreateLinkSchema, owner_id: int
+    ) -> schema.Link:  # noqa: E501
         """Create new link"""
         letters = string.ascii_lowercase
         key = "".join(random.choice(letters) for i in range(10))
-        db_link = link.Link(**inp.dict(), key=key)
+        db_link = link.Link(**inp.dict(), key=key, owner_id=owner_id)
         self.db.add(db_link)
         self.db.commit()
         self.db.refresh(db_link)
@@ -36,12 +38,13 @@ class Service:
         db_link = self.db.query(link.Link).filter(link.Link.key == key).first()
         if db_link is None:
             raise exceptions.LinkNotFoundException()
+        # TODO: Fix the Enum issue
         res = schema.Link(
             id=db_link.id,
             key=db_link.key,
             reference=db_link.reference,
             owner_id=db_link.owner_id,
-            action=db_link.action,
+            action="REDIRECT",
             is_active=db_link.is_active,
         )
         return res

@@ -3,11 +3,7 @@ from pydantic import AnyHttpUrl, BaseModel
 
 class CreateLinkSchema(BaseModel):
     reference: AnyHttpUrl
-    owner_id: int
     action: str
-
-    class Config:
-        orm_mode = True
 
 
 class Link(BaseModel):

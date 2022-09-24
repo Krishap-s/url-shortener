@@ -48,7 +48,7 @@ class TestUserService(unittest.TestCase):
             owner_id=self.user1.id,
             action="REDIRECT",
         )
-        res = self.service.create_link(inp)
+        res = self.service.create_link(inp, 1)
         db_link = (
             self.db.query(link.Link)
             .filter(link.Link.key == res.key)
@@ -72,6 +72,7 @@ class TestUserService(unittest.TestCase):
             "testlink345",  # noqa:E501
         )
 
+    # TODO: Remove commented code
     '''
 
     def test_get_user_by_email(self):

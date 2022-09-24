@@ -1,6 +1,7 @@
 import fastapi
 from fastapi import exceptions, routing, status
 from jose import jwt
+from sqlalchemy import exc
 
 from authentication import get_current_user
 from infrastructure.db import get_db
@@ -18,7 +19,7 @@ def register_user(inp: schema.CreateUserSchema):
     try:
         user = UserService.create_user(inp)
         return user
-    except Exception:
+    except exc.IntegrityError:
         raise exceptions.HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="User with similar username or email already exists",
