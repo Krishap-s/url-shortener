@@ -21,7 +21,7 @@ gunicorn==20.1.0
 h11==0.14.0
 identify==2.5.5
 idna==3.4
-importlib-metadata==4.12.0
+importlib-metadata==5.0.0
 importlib-resources==5.9.0
 iniconfig==1.1.1
 Mako==1.2.3
