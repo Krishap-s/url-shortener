@@ -1,8 +1,8 @@
 """create complaint table
 
-Revision ID: 9be2384e9d38
-Revises: 89536539869b
-Create Date: 2022-10-26 12:40:24.309037
+Revision ID: 75af667ff69d
+Revises: cd4b15bf70e0
+Create Date: 2022-10-26 12:57:25.385081
 
 """
 import sqlalchemy as sa
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = "9be2384e9d38"
-down_revision = "89536539869b"
+revision = "75af667ff69d"
+down_revision = "cd4b15bf70e0"
 branch_labels = None
 depends_on = None
 
@@ -22,7 +22,12 @@ def upgrade() -> None:
         "complaints",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("link_id", sa.Integer(), nullable=True),
-        sa.Column("is_active", sa.Boolean(), nullable=True),
+        sa.Column("body", sa.String(length=1000), nullable=True),
+        sa.Column(
+            "status",
+            sa.Enum("VALID", "INVALID", "PENDING", name="status"),
+            nullable=True,
+        ),
         sa.ForeignKeyConstraint(
             ["link_id"],
             ["links.id"],

@@ -15,7 +15,9 @@ class Link(db.Base):
     owner_id: int = sqlalchemy.Column(
         sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id")
     )
-    action: str = sqlalchemy.Enum("REDIRECT", "WARN", "BLOCK", name="action")
+    action: str = sqlalchemy.Column(
+        sqlalchemy.Enum("REDIRECT", "WARN", "BLOCK", name="action")
+    )
     is_active: bool = sqlalchemy.Column(sqlalchemy.Boolean, default=True)
 
     owner = orm.relationship("User")

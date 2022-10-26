@@ -13,7 +13,9 @@ class Complaint(db.Base):
     link_id: int = sqlalchemy.Column(
         sqlalchemy.Integer, sqlalchemy.ForeignKey("links.id")
     )
-    status: str = sqlalchemy.Enum("VALID", "INVALID", "PENDING", name="status")
-    is_active: bool = sqlalchemy.Column(sqlalchemy.Boolean, default=True)
+    body: str = sqlalchemy.Column(sqlalchemy.String(1000))
+    status: str = sqlalchemy.Column(
+        sqlalchemy.Enum("VALID", "INVALID", "PENDING", name="status")
+    )
 
     link = orm.relationship("Link")

@@ -1,8 +1,8 @@
 """create user and link table
 
-Revision ID: 89536539869b
+Revision ID: cd4b15bf70e0
 Revises:
-Create Date: 2022-10-26 12:39:41.957444
+Create Date: 2022-10-26 12:55:38.710964
 
 """
 import sqlalchemy as sa
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = "89536539869b"
+revision = "cd4b15bf70e0"
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -37,6 +37,9 @@ def upgrade() -> None:
         sa.Column("key", sa.String(), nullable=True),
         sa.Column("reference", sa.String(), nullable=True),
         sa.Column("owner_id", sa.Integer(), nullable=True),
+        sa.Column(
+            "action", sa.Enum("REDIRECT", "WARN", "BLOCK", name="action"), nullable=True
+        ),
         sa.Column("is_active", sa.Boolean(), nullable=True),
         sa.ForeignKeyConstraint(
             ["owner_id"],
