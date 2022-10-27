@@ -3,6 +3,7 @@ from fastapi import security
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 
+from api.complaint import ComplaintRouter
 from api.link import LinkRouter
 from api.user import UserRouter
 from settings import settings
@@ -34,3 +35,4 @@ async def healthcheck():
 
 app.include_router(UserRouter)
 app.include_router(LinkRouter)
+app.include_router(ComplaintRouter)

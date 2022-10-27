@@ -1,3 +1,5 @@
+import typing
+
 from sqlalchemy import orm
 
 from models import complaint, link
@@ -35,7 +37,9 @@ class Service:
         )
         return res
 
-    def get_complaints_by_link(self, link_key: str) -> list[schema.Complaint]:
+    def get_complaints_by_link(
+        self, link_key: str
+    ) -> typing.List[schema.Complaint]:  # noqa: E501
         """Get complaint associated by link key"""
         db_link = (
             self.db.query(link.Link).filter(link.Link.key == link_key).first()
