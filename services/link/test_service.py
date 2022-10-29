@@ -90,6 +90,32 @@ class TestLinkService(unittest.TestCase):
             "testlink345",  # noqa:E501
         )
 
+    def test_get_all_links(self):
+        """Test if all links can be retreived"""
+        res = self.service.get_all_links()
+        self.assertIsNotNone(res)
+        self.assertEqual(len(res), 1)
+        self.assertEqual(res[0].reference, "http://test.com")
+
+    def test_update_link(self):
+        """Test if link can be updated"""
+        inp = schema.UpdateLinkSchema(
+            key="testlink123",
+            action="BLOCK",
+        )
+        res = self.service.update_link_action_by_key(inp)
+        self.assertIsNotNone(res)
+        self.assertEqual(res.action, "BLOCK")
+        inp = schema.UpdateLinkSchema(
+            key="testlink",
+            action="BLOCK",
+        )
+        self.assertRaises(
+            exceptions.LinkNotFoundException,
+            self.service.update_link_action_by_key,
+            inp,  # noqa:E501
+        )
+
     # TODO: Remove commented code
     '''
 

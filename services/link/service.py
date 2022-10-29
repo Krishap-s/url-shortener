@@ -1,5 +1,6 @@
 import random
 import string
+import typing
 
 from sqlalchemy import orm
 
@@ -42,6 +43,23 @@ class Service:
         )
         return res
 
+    def get_all_links(self) -> typing.List[schema.Link]:
+        """Get all links"""
+        db_links = self.db.query(link.Link).all()
+        res = []
+        for db_link in db_links:
+            res.append(
+                schema.Link(
+                    id=db_link.id,
+                    key=db_link.key,
+                    reference=db_link.reference,
+                    owner_id=db_link.owner_id,
+                    action=db_link.action,
+                    is_active=db_link.is_active,
+                )
+            )
+        return res
+
     def get_link_by_key(self, key: str) -> schema.Link:
         """Get link from key"""
         stmt = self.cassandra_session.prepare(
@@ -59,6 +77,23 @@ class Service:
             is_active=res.is_active,
         )
         return res
+
+    def update_link_action_by_key(
+        self, inp: schema.UpdateLinkSchema
+    ) -> schema.Link:  # noqa: E501
+        stmt = self.cassandra_session.prepare(
+            "UPDATE urls SET action = ? WHERE key = ? ;"
+        )
+        self.cassandra_session.execute(stmt, (inp.action, inp.key))
+        cnt = (
+            self.db.query(link.Link)
+            .filter_by(key=inp.key)
+            .update({"action": inp.action})
+        )
+        if cnt == 0:
+            raise exceptions.LinkNotFoundException()
+        self.db.commit()
+        return self.get_link_by_key(inp.key)
 
     '''
 
