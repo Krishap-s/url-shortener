@@ -41,7 +41,7 @@ jobs:
 
       cqlsh:
         image: docker-cqlsh
-        options: -v "$(pwd)/data.cql:/scripts/data.cql"
+        options: -v "init.cql:/scripts/data.cql"
         env:
            CQLSH_HOST: cassandra
            CQSH_PORT: 9042
