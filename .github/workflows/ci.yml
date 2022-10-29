@@ -36,6 +36,7 @@ jobs:
           POSTGRES_PASSWORD: postgres
       cassandra:
         image: cassandra
+        options: -v init.cql:/files/init.cql
         ports:
           - 9042:9042
     env:
@@ -58,6 +59,7 @@ jobs:
           pip install -r requirements.txt
       - name: Run Cassandra init script
         run: /
-          docker exec -it ${{ job.services.cassandra.id }} cqlsh -f init.cql
+          docker exec ${{ job.services.cassandra.id }} cqlsh -f "/files/init.cql"
+
       - name: Test with pytest
         run:  pytest --dburl $DATABASE_URL
