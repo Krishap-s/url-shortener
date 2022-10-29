@@ -58,8 +58,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       - name: Run Cassandra init script
-        run: /
-          docker exec ${{ job.services.cassandra.id }} cqlsh -f "/files/init.cql"
+        run: |
+          docker exec ${{ job.services.cassandra.id }} cqlsh -e "CREATE KEYSPACE IF NOT EXISTS url_shortener WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : '1' };"
+          docker exec ${{ job.services.cassandra.id }} cqlsh -e "CREATE TABLE IF NOT EXISTS url_shortener.urls (key text PRIMARY KEY, reference text, owner_id int, action text, is_active boolean );"
 
       - name: Test with pytest
         run:  pytest --dburl $DATABASE_URL
