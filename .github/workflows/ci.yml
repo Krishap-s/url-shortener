@@ -40,7 +40,7 @@ jobs:
           - 9042:9042
 
       cqlsh:
-        image: docker-cqlsh
+        image: nuvo/docker-cqlsh
         options: -v "$(pwd)/data.cql:/scripts/data.cql"
         env:
            CQLSH_HOST: cassandra
