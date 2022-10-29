@@ -1,17 +1,20 @@
 import typing
 
+from fastapi import Depends
 from fastapi import exceptions as faexceptions
 from fastapi import routing
 
+from authentication import is_admin
 from infrastructure.db import get_db
 from services.complaint import exceptions, schema, service
+from services.users import schema as users_schemas
 
 ComplaintRouter = routing.APIRouter(prefix="/complaint")
 ComplaintService = service.Service(get_db())
 
 
 @ComplaintRouter.post("/create_complaint", response_model=schema.Complaint)
-def create_complaint(
+async def create_complaint(
     inp: schema.CreateComplaintSchema,  # noqa: E501
 ):
     """Create new complaint"""
@@ -24,10 +27,11 @@ def create_complaint(
 
 
 @ComplaintRouter.get(
-    "/get_complaints", response_model=typing.List[schema.Complaint]
+    "/get_complaints",
+    response_model=typing.List[schema.Complaint],
 )  # noqa: E501
-def get_complaints(
-    link_key: str,  # noqa: E501
+async def get_complaints(
+    link_key: str, user: users_schemas.User = Depends(is_admin)  # noqa: E501
 ):
     """Get complaints"""
     try:

@@ -2,7 +2,7 @@ import unittest
 
 import pytest
 
-from infrastructure.CassandraDB import session
+from infrastructure.CassandraDB import get_cassandra_db
 from infrastructure.db import Base
 from models import link, user
 from services.link import exceptions, schema, service
@@ -17,7 +17,7 @@ class TestLinkService(unittest.TestCase):
     def setUp(self) -> None:
         Base.metadata.create_all(self.engine)
         # Get cassandra session
-        self.cassandra_session = session
+        self.cassandra_session = get_cassandra_db()
         # Connect to database and initialize service
         self.service = service.Service(self.db, self.cassandra_session)
         # Insert test data
@@ -61,8 +61,7 @@ class TestLinkService(unittest.TestCase):
         """Test if user can create a link"""
         inp = schema.CreateLinkSchema(
             reference="http://test.com",
-            owner_id=self.user1.id,
-            action="REDIRECT",
+            is_active=True,
         )
         res = self.service.create_link(inp, 1)
         db_link = (
@@ -71,6 +70,7 @@ class TestLinkService(unittest.TestCase):
             .first()  # noqa:E501
         )
         self.assertIsNotNone(db_link)
+        self.assertEqual(db_link.action, "REDIRECT")
 
     def tearDown(self) -> None:
         self.db.rollback()

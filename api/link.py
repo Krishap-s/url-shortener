@@ -3,12 +3,13 @@ from fastapi import exceptions as faexceptions
 from fastapi import routing
 
 from authentication import get_current_user
+from infrastructure.CassandraDB import get_cassandra_db
 from infrastructure.db import get_db
 from services.link import exceptions, schema, service
 from services.users import schema as UserSchemas
 
 LinkRouter = routing.APIRouter(prefix="/link")
-LinkService = service.Service(get_db())
+LinkService = service.Service(get_db(), get_cassandra_db())
 
 
 @LinkRouter.post("/", response_model=schema.Link)

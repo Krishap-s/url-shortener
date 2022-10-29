@@ -4,7 +4,7 @@ from pydantic import BaseSettings
 class Settings(BaseSettings):
     app_name: str = "url_shortener"
     database_url: str = "sqlite:///:memory:"
-    cassandra_url: str = "cassandra://localhost:9042"
+    cassandra_host: str = "localhost"
     cassandra_keyspace: str = "url_shortener"
     allow_origins: list = ["*"]
     migrate: bool = False
@@ -15,7 +15,7 @@ class Settings(BaseSettings):
         env = {
             "database_url": {"env": "DATABASE_URL"},
             "migrate": {"env": "MIGRATE"},
-            "cassandra_url": {"env": "CASSANDRA_URL"},
+            "cassandra_host": {"env": "CASSANDRA_HOST"},
             "cassandra_keyspace": {"env": "CASSANDRA_KEYSPACE"},
         }  # noqa: E501
 

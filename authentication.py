@@ -26,7 +26,6 @@ async def get_current_user(
         payload = jwt.decode(
             token.encode(), settings.secret_key, algorithms=["HS256"]
         )  # noqa: E501
-        print(payload)
         id: int = payload.get("sub")
         user = UserService.get_user_by_id(id)
         if int is None:
@@ -35,3 +34,14 @@ async def get_current_user(
     except Exception as e:
         print(e)
         raise credentials_exception
+
+
+async def is_admin(
+    user=fastapi.Depends(get_current_user),
+):
+    if not user.is_admin:
+        raise exceptions.HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not an admin",
+        )
+    return user

@@ -2,5 +2,14 @@ from cassandra import cluster
 
 from settings import settings
 
-clstr = cluster.Cluster()
-session = clstr.connect(settings.cassandra_keyspace)
+db = None
+
+
+def get_cassandra_db():
+    global db
+    if db is None:
+        clstr = cluster.Cluster(
+            [settings.cassandra_host],
+        )
+        db = clstr.connect(settings.cassandra_keyspace)
+    return db

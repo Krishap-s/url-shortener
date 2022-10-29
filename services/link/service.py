@@ -23,12 +23,14 @@ class Service:
         stmt = self.cassandra_session.prepare(
             "INSERT INTO urls (key, reference, action, owner_id, is_active) VALUES (?,?,?,?,?);"  # noqa: E501
         )
-        db_link = link.Link(**inp.dict(), key=key, owner_id=owner_id)
+        db_link = link.Link(
+            **inp.dict(), key=key, owner_id=owner_id, action="REDIRECT"
+        )  # noqa: E501
         self.db.add(db_link)
         self.db.commit()
         self.db.refresh(db_link)
         self.cassandra_session.execute(
-            stmt, (key, inp.reference, inp.action, owner_id, True)
+            stmt, (key, inp.reference, "REDIRECT", owner_id, True)
         )
         res = schema.Link(
             id=db_link.id,
