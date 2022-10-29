@@ -58,6 +58,6 @@ jobs:
           pip install -r requirements.txt
       - name: Run Cassandra init script
         run: /
-          docker exec ${{ job.services.cassandra.id }} -i cqlsh -t < init.cql
+          docker exec -it ${{ job.services.cassandra.id }} cqlsh -f init.cql
       - name: Test with pytest
         run:  pytest --dburl $DATABASE_URL
