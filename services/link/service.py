@@ -9,8 +9,9 @@ from . import exceptions, schema
 
 
 class Service:
-    def __init__(self, session: orm.Session):
+    def __init__(self, session: orm.Session, cassandra_session):
         """Build Link Service"""
+        self.cassandra_session = cassandra_session
         self.db = session
 
     def create_link(
@@ -19,10 +20,16 @@ class Service:
         """Create new link"""
         letters = string.ascii_lowercase
         key = "".join(random.choice(letters) for i in range(10))
+        stmt = self.cassandra_session.prepare(
+            "INSERT INTO urls (key, reference, action, owner_id, is_active) VALUES (?,?,?,?,?);"  # noqa: E501
+        )
         db_link = link.Link(**inp.dict(), key=key, owner_id=owner_id)
         self.db.add(db_link)
         self.db.commit()
         self.db.refresh(db_link)
+        self.cassandra_session.execute(
+            stmt, (key, inp.reference, inp.action, owner_id, True)
+        )
         res = schema.Link(
             id=db_link.id,
             key=db_link.key,
@@ -35,17 +42,19 @@ class Service:
 
     def get_link_by_key(self, key: str) -> schema.Link:
         """Get link from key"""
-        db_link = self.db.query(link.Link).filter(link.Link.key == key).first()
-        if db_link is None:
+        stmt = self.cassandra_session.prepare(
+            "SELECT * FROM urls WHERE key = ? ;"
+        )  # noqa: E501
+        rows = self.cassandra_session.execute(stmt, (key,))
+        if rows.one() is None:
             raise exceptions.LinkNotFoundException()
-        # TODO: Fix the Enum issue
+        res = rows.one()
         res = schema.Link(
-            id=db_link.id,
-            key=db_link.key,
-            reference=db_link.reference,
-            owner_id=db_link.owner_id,
-            action="REDIRECT",
-            is_active=db_link.is_active,
+            key=res.key,
+            reference=res.reference,
+            action=res.action,
+            owner_id=res.owner_id,
+            is_active=res.is_active,
         )
         return res
 

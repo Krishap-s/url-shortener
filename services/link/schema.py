@@ -8,7 +8,6 @@ class CreateLinkSchema(BaseModel):
 
 class Link(BaseModel):
 
-    id: int
     key: str
     reference: AnyHttpUrl
     owner_id: int

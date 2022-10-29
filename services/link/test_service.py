@@ -2,12 +2,13 @@ import unittest
 
 import pytest
 
+from infrastructure.CassandraDB import session
 from infrastructure.db import Base
 from models import link, user
 from services.link import exceptions, schema, service
 
 
-class TestUserService(unittest.TestCase):
+class TestLinkService(unittest.TestCase):
     @pytest.fixture(autouse=True)
     def db_setup(self, db_session_factory):
         self.db = db_session_factory()
@@ -15,8 +16,10 @@ class TestUserService(unittest.TestCase):
 
     def setUp(self) -> None:
         Base.metadata.create_all(self.engine)
+        # Get cassandra session
+        self.cassandra_session = session
         # Connect to database and initialize service
-        self.service = service.Service(self.db)
+        self.service = service.Service(self.db, self.cassandra_session)
         # Insert test data
         # Password:"hello"
         self.user1 = user.User(
@@ -36,13 +39,26 @@ class TestUserService(unittest.TestCase):
             action="REDIRECT",
             is_active=True,
         )
+        stmt = self.cassandra_session.prepare(
+            "INSERT INTO urls (key, reference, action, owner_id,is_active) VALUES (?,?,?,?,?);"  # noqa:E501
+        )
+        self.cassandra_session.execute(
+            stmt,
+            (
+                self.link1.key,
+                self.link1.reference,
+                self.link1.action,
+                self.link1.owner_id,
+                self.link1.is_active,
+            ),
+        )
         self.db.add(self.user1)
         self.db.add(self.user2)
         self.db.add(self.link1)
         self.db.commit()
 
     def test_create_link(self):
-        """Test if user can be created"""
+        """Test if user can create a link"""
         inp = schema.CreateLinkSchema(
             reference="http://test.com",
             owner_id=self.user1.id,
@@ -60,6 +76,8 @@ class TestUserService(unittest.TestCase):
         self.db.rollback()
         self.db.close()
         Base.metadata.drop_all(self.engine)
+        # Clear url table
+        self.cassandra_session.execute("TRUNCATE urls")
 
     def test_get_link_by_key(self):
         """Test if a link can be retreived by key"""
