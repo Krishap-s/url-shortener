@@ -6,6 +6,8 @@ class Settings(BaseSettings):
     database_url: str = "sqlite:///:memory:"
     cassandra_host: str = "localhost"
     cassandra_keyspace: str = "url_shortener"
+    cassandra_username: str
+    cassandra_password: str
     allow_origins: list = ["*"]
     migrate: bool = False
     secret_key: str = "secret"
@@ -16,6 +18,8 @@ class Settings(BaseSettings):
             "database_url": {"env": "DATABASE_URL"},
             "migrate": {"env": "MIGRATE"},
             "cassandra_host": {"env": "CASSANDRA_HOST"},
+            "cassandra_username": {"env": "CASSANDRA_USERNAME"},
+            "cassandra_password": {"env": "CASSANDRA_PASSWORD"},
             "cassandra_keyspace": {"env": "CASSANDRA_KEYSPACE"},
         }  # noqa: E501
 
