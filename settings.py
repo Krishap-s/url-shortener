@@ -1,3 +1,5 @@
+from typing import Union
+
 from pydantic import BaseSettings
 
 
@@ -6,8 +8,8 @@ class Settings(BaseSettings):
     database_url: str = "sqlite:///:memory:"
     cassandra_host: str = "localhost"
     cassandra_keyspace: str = "url_shortener"
-    cassandra_username: str
-    cassandra_password: str
+    cassandra_username: Union[None, str]
+    cassandra_password: Union[None, str]
     allow_origins: list = ["*"]
     migrate: bool = False
     secret_key: str = "secret"
